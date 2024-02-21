@@ -4,7 +4,7 @@ const cTable = require("console.table");
 const userPrompts = require("./lib/inquirerPrompts");
 const {viewAllEmployees, viewAllRoles, viewAllDepartments} = require("./lib/viewContent");
 const {addEmployee, addRole, addDepartment} = require("./lib/addContent");
-const {updateEmployeeRole} = require("./lib/updateContent")
+const {updateEmployeeRole} = require("./lib/updateContent");
 
 
 const PORT = process.env.PORT || 3001; 
@@ -35,37 +35,38 @@ const db = mysql.createConnection(
   });
 
   function initEmployeeDatabaseApp() {
+    
     userPrompts()
     .then(answers => {
 
         switch(answers.menu){
 
             case "View All Employees":
-                viewAllEmployees();
+                viewAllEmployees(db);
                 break; 
 
             case "Add Employee":
-                addEmployee();
+                addEmployee(db);
                 break;
 
             case "Update Employee Role":
-                updateEmployeeRole();
+                updateEmployeeRole(db);
                 break; 
             
             case "View All Roles":
-                viewAllRoles();
+                viewAllRoles(db);
                 break;
             
             case "Add Role":
-                addRole();
+                addRole(db);
                 break;
 
             case "View All Departments":
-                viewAllDepartments();
+                viewAllDepartments(db);
                 break;
 
             case "Add Department":
-                addDepartment();
+                addDepartment(db);
                 break;
 
             case "Exit":
