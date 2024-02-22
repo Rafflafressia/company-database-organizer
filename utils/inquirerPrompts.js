@@ -12,6 +12,8 @@ const mainmenu = {
         "Add Role",
         "View All Departments",
         "Add Department",
+        "Remove Employee",
+        "Update Employee Role",
         "Exit",
     ]
 };
