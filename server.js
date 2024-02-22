@@ -89,7 +89,13 @@ function addDepartment() {
   
             console.log("Department list updated");
 
-            console.table(results);
+            db.query("SELECT * FROM department", (err, results)=>{
+                if(err){
+                    console.error("Could not retrieve department table", err);
+                    return;
+                }
+                console.table(results);
+            })
 
             initEmployeeDatabaseApp();
           }
@@ -157,6 +163,7 @@ function addRole() {
                     console.table(results);
                 })
 
+                initEmployeeDatabaseApp();
             })
         })
         .catch((error) => {
@@ -262,6 +269,74 @@ function addEmployee() {
     });
   }
 
+// Update Employee Role
+function updateEmployee(){
+    db.query("SELECT * FROM employees", (err, results) => {
+        if(err){
+            console.error("Could not retrieve employee columns", err);
+            return;
+        }
+
+        const employee = results.map(({first_name, last_name, id}) => ({
+            name: `${first_name} ${last_name}`,
+            value: id,
+        }))
+
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "employee",
+                message: "Select Employee to change role",
+                choices: employee
+            }
+        ])
+        .then(employeeAnswer => {
+            db.query("SELECT id, title FROM roles", (err, results) => {
+                if(err){
+                    console.error("Error retrieving roles", err);
+                    return;
+                }
+
+                const roles = results.map(({id, title}) =>({
+                    name: title,
+                    value: id,
+                }))
+
+                inquirer
+                .prompt([
+                    {
+                        type: "list",
+                        name: "role",
+                        message: "Select the role to update to",
+                        choices: roles,
+                    }
+                ])
+                .then(roleAnswers => {
+                    db.query("UPDATE employees SET role_id = ? WHERE id = ?", [roleAnswers.role, employeeAnswer.employee], (err, results) => {
+                        if (err){
+                            console.error("Prompt Error: Could not update table", err);
+                            return;
+                        }
+
+                        console.log("Employee role updated!");
+
+                        db.query("SELECT * FROM employees", (err, results) =>{
+                            if (err){
+                                console.error("Could not retrieve employees", err);
+                                return;
+                            }
+
+                            console.table(results);
+                        });
+
+                        initEmployeeDatabaseApp();
+                    })
+                })
+
+            })
+        })
+    })
+}
 
 // Delete Employee
 function deleteEmployee(){
@@ -287,7 +362,7 @@ function deleteEmployee(){
             }
         ])
         .then((answers) => {
-            db.query("DELETE FROM employees WHERE ?", answers.employee.id, (err, results) =>{
+            db.query("DELETE FROM employees WHERE id = ?", answers.employee, (err, results) =>{
                 if (err){
                     console.error("Could not update employees table", err);
                     return;
@@ -318,10 +393,6 @@ function deleteEmployee(){
             case "Add Employee":
                 addEmployee();
                 break;
-
-            case "Update Employee Role":
-                updateEmployeeRole();
-                break; 
             
             case "View All Roles":
                 viewAllRoles();
@@ -341,6 +412,10 @@ function deleteEmployee(){
 
             case "Remove Employee":
                 deleteEmployee();
+                break;
+
+            case "Update Employee Role":
+                updateEmployee();
                 break;
 
             case "Exit":
