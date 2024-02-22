@@ -54,6 +54,7 @@ Requires NodeJS, ExpressJS, Inquirer, mysql2, console.table
 
 ## Demonstration Video
 
+https://www.youtube.com/watch?v=mwnDocTCKog
 
 ## Planned Updates
 
